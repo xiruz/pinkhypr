@@ -103,7 +103,7 @@ function install_software() {
     if yay -Q $1 &>> /dev/null ; then
         echo -e ""
     else
-        # if something has not been installed correct an error message will be printed
+        # if something has not been installed correctly an error message will be printed
         echo -e "$1 has not been installed correctly, please check install.log"
         exit 0
     fi
@@ -130,7 +130,7 @@ function packagemanager() {
         if [ -f /sbin/yay ]; then
             :
         else
-            echo -e "Yay installtion h as failed, please read the install.log file"
+            echo -e "Yay installtion has failed, please read the install.log file"
             exit 0
         fi
     fi
