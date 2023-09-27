@@ -65,7 +65,13 @@ function present() {
         "p"
         "1"
         "n"
-        "0\n"
+        "0"
+	"&"
+	"x"
+	"i"
+	"r"
+	"u"
+	"z\n"
     )
 
     for letter in ${array[@]}; do
@@ -74,7 +80,7 @@ function present() {
     done
 }
 
-# PROGRESO DE BARRA MOSTRADO AL USUARIO
+# PROGRESS BAR SHOWN TO THE USER
 
 function show_progress() {
     while ps | grep $1 &> /dev/null;
@@ -86,37 +92,37 @@ function show_progress() {
     sleep 2
 }
 
-# FUNCION ENCARGADA DE INSTALAR LOS PAQUETES Y DEPENDENCIAS
+# FUNCTION IN CHARGE OF INSTALLING PACKAGES AND DEPENDENCIES
 
 function install_software() {
     echo -en $1
     yay -S --noconfirm $1 &>> $INSTLOG &
     show_progress $!
 
-    # comprobamos si se ha instalado correctamente
+    # here we check that everyting has been installed correctly
     if yay -Q $1 &>> /dev/null ; then
         echo -e ""
     else
-        # si no se ha instalado correctamente se imprimirá un mensaje de error
-        echo -e "$1 no ha sido instalado correctamente, porfavor comprueba install.log"
+        # if something has not been installed correct an error message will be printed
+        echo -e "$1 has not been installed correctly, please check install.log"
         exit 0
     fi
 }
 
-# ACTUALIZAR SISTEMA
+# UPDATE SYSTEM
 
 function update() {
-    echo -en "Actualizando el sistema."
+    echo -en "Updating the system."
     sudo pacman -Syu --noconfirm &>> $INSTLOG &
     show_progress $!
     echo -en "\n"
 }
 
-# INSTALACIÓN PACKAGE MANAGER YAY
+# INSTALLING YAY PACKAGE MANAGER
 
 function packagemanager() {
     if [ ! -f /sbin/yay ]; then  
-        echo -en "Instalando yay."
+        echo -en "Installed yay."
         git clone https://aur.archlinux.org/yay-git &>> $INSTLOG
         cd yay-git
         makepkg -si --noconfirm &>> ../$INSTLOG &
@@ -124,7 +130,7 @@ function packagemanager() {
         if [ -f /sbin/yay ]; then
             :
         else
-            echo -e "La instalación de yay ha fallado, porfavor lee el archivo install.log"
+            echo -e "Yay installtion h as failed, please read the install.log file"
             exit 0
         fi
     fi
@@ -134,7 +140,7 @@ function packagemanager() {
 
 function setup() {
     echo -e "\n"
-    echo -en "\e[33m[x] Instalando paquetes Yay...\e[0m\n"
+    echo -en "\e[33m[x] Installing Yay packages...\e[0m\n"
     for SOFTWR in ${install_packages_yay[@]}; do
         if [ "$SOFTWR" == 'rustup' ]; then
             sudo pacman -R --noconfirm rust > /dev/null 2>&1
@@ -145,7 +151,7 @@ function setup() {
     done
 
     echo -en "\n"
-    echo -en "\e[33m[x] Instalando eww bar...\e[0m\n"
+    echo -en "\e[33m[x] Installing eww bar...\e[0m\n"
     echo -en "eww."
     cd "$HOME"
     git clone https://github.com/elkowar/eww &>> $INSTLOG
@@ -161,7 +167,7 @@ function setup() {
 
 function copia() {
     echo -en "\n"
-    echo -en "\e[33m[x] Copiando configuración...\e[0m\n"
+    echo -en "\e[33m[x] Copying configuration...\e[0m\n"
     echo -en "dotfiles."
 
     mkdir "$HOME/.config" > /dev/null 2>&1
@@ -228,15 +234,15 @@ function copia() {
     echo -en "\n"
 }
 
-# FINALIZACION
+# END
 
 function finalizacion() {
     echo ""
-    echo "INSTALACIÓN FINALIZADA"
+    echo "INSTALLATION COMPLETED"
     echo ""
 }
 
-# SE LLAMA A TODAS LAS FUNCIONES PROGRESIVAMENTE
+# ALL FUNCTIONS ARE CALLED PROGRESSIVELY
 
 function call() {
     ruta=$(pwd)
@@ -247,23 +253,23 @@ function call() {
     finalizacion
 }
 
-# SE COMPRUEBA SI EL INSTALADOR SE EJECUTA COMO ROOT
+# CHECKS IF THE INSTALLER IS RUNNING AS ROOT
 
 if [ $(whoami) != 'root' ]; then
     present
-    # confirmación de proceder a instalar
+    # confirmation to proceed with install
     echo -en '\n'
-    read -rep 'Atención!! En este momento se va a iniciar la instalación. ¿Desea continuar? (y,n) ' CONTINST
+    read -rep 'Attention! The installation is ready to begin. Do you wish to continue (y,n) ' CONTINST
     if [[ $CONTINST == "Y" || $CONTINST == "y" ]]; then
         echo -en "\n"
-        echo -en "\e[33m[x] Iniciando Setup...\e[0m\n"
+        echo -en "\e[33m[x] Starting Setup...\e[0m\n"
         sudo touch /tmp/hyprv.tmp
         call
     else
-        echo -e "Saliendo del script, no se han realizado cambios en tu sistema."
+        echo -e "Exiting the script, no changes have been made to your system."
         exit 0
     fi
 else
-    echo 'Error, el script no debe ser ejecutado como root.'
+    echo 'Error, the script should not be run as root. '
     exit 0
 fi
